@@ -1,31 +1,48 @@
 package main
 
 import (
-	"flag"
-	"log"
-
+	"encoding/json"
+	"fmt"
 	"github.com/nlopes/slack"
+	"log"
+	"os"
+	"os/exec"
 )
 
 // SLACKTOKEN is the slack API token
 var SLACKTOKEN string
 
+//Current Git Tag
+var GITTAG string
+
+// CHANNEL is the Slack ID for channel #puddle
+var CHANNEL string = "C32K3QDFE"
+
+var rtm *slack.RTM
+var slackAPI *slack.Client
+
 func init() {
-	flag.StringVar(&SLACKTOKEN, "slack_token", "", "Slack API Token")
+	SLACKTOKEN = os.Getenv("SLACKTOKEN")
+
+	out, err := exec.Command("git", "rev-parse", "HEAD").Output()
+	if err != nil {
+		GITTAG = "NO TAG"
+	} else {
+		GITTAG = string(out)
+	}
 }
 
 func main() {
-	flag.Parse()
 	if SLACKTOKEN == "" {
 		log.Fatalln("No slack token provided")
 	}
-	api := slack.New(SLACKTOKEN)
+	slackAPI = slack.New(SLACKTOKEN)
 
 	// If you set debugging, it will log all requests to the console
 	// Useful when encountering issues
-	api.SetDebug(true)
+	slackAPI.SetDebug(true)
 
-	rtm := api.NewRTM()
+	rtm = slackAPI.NewRTM()
 	go rtm.ManageConnection()
 
 Loop:
@@ -34,12 +51,38 @@ Loop:
 		case msg := <-rtm.IncomingEvents:
 			log.Print("Event Received: ")
 			switch ev := msg.Data.(type) {
+			case *slack.HelloEvent:
+				// Ignore hello
+
+			case *slack.ConnectedEvent:
+				log.Println("######### Connected to Slack #########")
+				// log.Println("Infos:", ev.Info)
+				// log.Println("Connection counter:", ev.ConnectionCount)
+				// Replace #general with your Channel ID
+				rtm.SendMessage(rtm.NewOutgoingMessage(fmt.Sprintf("... and I'm back! Git tag: %s", GITTAG), CHANNEL))
+
 			case *slack.MessageEvent:
-				log.Printf("Message: %v\n", ev)
+				j, _ := json.Marshal(ev.Msg)
+				log.Printf("Message: %v\n", string(j))
+				ProcessMessage(ev.Msg)
+
+			case *slack.PresenceChangeEvent:
+				log.Printf("Presence Change: %v\n", ev)
+
+			case *slack.LatencyReport:
+				log.Printf("Current latency: %v\n", ev.Value)
+
+			case *slack.RTMError:
+				log.Printf("Error: %s\n", ev.Error())
+
 			case *slack.InvalidAuthEvent:
 				log.Printf("Invalid credentials")
 				break Loop
+
 			default:
+
+				// Ignore other events..
+				// log.Printf("Unexpected: %v\n", msg.Data)
 			}
 		}
 	}
