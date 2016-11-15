@@ -34,7 +34,9 @@ This project is an **Open Source** project encouraging everyone to be fearless i
 * This project is more like an open wiki than a standard guarded project.
 
 
-## For issue reporters
+## For issue reporters and feature requests
+
+* __Use labels!__ Use your judgement to figure out how difficult the issue is. Level 1 is for noobs, level 2 is for those proficient Go concepts such as channels & pointers, level 3 is reserved for those that are Godlike, or want to be.
 
 * __Don't be afraid!__ You don't need to submit code to contribute to the success of a project! Don't hold back on submitting issues, commenting on discussions and helping people out.
 
