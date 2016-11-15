@@ -77,7 +77,7 @@ func RegisterAdminCommand(cmdString string, fn func(string, string, slack.Msg) e
 	lock.Lock()
 	defer lock.Unlock()
 
-	if _, ok := adminCommands["foo"]; !ok {
+	if _, ok := adminCommands[cmdString]; !ok {
 		adminCommands[cmdString] = fn
 		return nil
 	}
