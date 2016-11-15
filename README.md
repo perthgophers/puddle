@@ -1,7 +1,21 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/perthgophers/puddle)](https://goreportcard.com/report/github.com/perthgophers/puddle)
+
 # Puddle
 The Perth Gophers Slackbot Mud Project
 
 # Introduction
+
+[Go 1.6](https://golang.org/) and above is required for this project.
+
+# Spinup
+
+```
+$ go get github.com/perthgophers/puddle
+$ go get github.com/Masterminds/glide
+$ cd  $GOPATH/src/github.com/perthgophers/puddle
+$ glide install
+$ go run main.go --slack_token <SLACK_API_TOKEN>
+```
 
 # Collaborative etiquette
 
