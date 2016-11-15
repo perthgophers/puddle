@@ -5,13 +5,11 @@ The Perth Gophers Slackbot Mud Project
 
 This is Puddle, the Perth Gopher's collaborative project. Created to help us learn Go and to teach others Go. 
 
-Puddle is a mud. Puddle is a slackbot. Puddle is a slackbot mud.
+Puddle is a mud. Puddle is a slackbot. Puddle is a slackbot mud. How do we design a Mud? Messily.
 
-How do we design a Mud? Messily.
-
-[Mud Design concepts](https://www.gammon.com.au/forum/?id=10147)
-[How do Muds work?](http://www.livinginternet.com/d/dw.htm)
-[Similar project for inspiration](https://github.com/Streamweaver/pogomud)
+* [Mud Design concepts](https://www.gammon.com.au/forum/?id=10147)
+* [How do Muds work?](http://www.livinginternet.com/d/dw.htm)
+* [Similar project for inspiration](https://github.com/Streamweaver/pogomud)
 
 This project will grow organically, and therefore it'll be an absolute mess. This is OK. However, that
 
