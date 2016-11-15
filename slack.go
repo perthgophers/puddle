@@ -64,7 +64,7 @@ func Build(username string, msgText string, msg slack.Msg) error {
 	SendMessage(username, string(out))
 	SendMessage(username, "...Restarting...")
 	cmd := exec.Command("./installandrun.sh")
-	cmd.Run()
+	cmd.Start()
 
 	os.Exit(1)
 	return err
