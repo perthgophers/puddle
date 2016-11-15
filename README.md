@@ -1,5 +1,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/perthgophers/puddle)](https://goreportcard.com/report/github.com/perthgophers/puddle)
 
+[![Build Status](https://travis-ci.org/perthgophers/puddle.svg?branch=develop)](https://travis-ci.org/perthgophers/puddle)
+
 # Puddle
 The Perth Gophers Slackbot Mud Project
 
