@@ -6,6 +6,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/nlopes/slack"
 	"log"
+	"os"
+	"os/exec"
 	"strings"
 	"sync"
 )
@@ -57,7 +59,15 @@ func SendMessage(username, text string) error {
 
 //Pull latest git master and rebuild, restart puddlebot
 func Build(username string, msgText string, msg slack.Msg) error {
-	return SendMessage(username, "building... (haha not really)")
+	SendMessage(username, "pulling origin/develop...")
+	out, err := exec.Command("git", "pull", "origin", "develop").Output()
+	SendMessage(username, string(out))
+	SendMessage(username, "...Restarting...")
+	cmd := exec.Command("./installandrun.sh")
+	cmd.Run()
+
+	os.Exit(1)
+	return err
 }
 
 //Register admin command
