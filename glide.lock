@@ -1,0 +1,6 @@
+hash: dbfda30cb3f762261ce4703790117efe6d9707f702675b57da046d269d9444df
+updated: 2016-11-15T10:06:56.43320485+08:00
+imports:
+- name: github.com/nlopes/slack
+  version: 3e8aa5655be613e1d4ce0b740993bb734a2b0f7b
+testImports: []
