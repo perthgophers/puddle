@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/nlopes/slack"
-	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 )
 
 // SLACKTOKEN is the slack API token
@@ -23,12 +23,13 @@ var slackAPI *slack.Client
 
 func init() {
 	SLACKTOKEN = os.Getenv("SLACKTOKEN")
-	gittagBytes, err := ioutil.ReadFile("./.git/ORIG_HEAD")
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	GITTAG = string(gittagBytes)
+	out, err := exec.Command("git", "rev-parse", "HEAD").Output()
+	if err != nil {
+		GITTAG = "NO TAG"
+	} else {
+		GITTAG = string(out)
+	}
 }
 
 func main() {
