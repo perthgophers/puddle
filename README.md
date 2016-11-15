@@ -13,9 +13,8 @@ Puddle is a mud. Puddle is a slackbot. Puddle is a slackbot mud. How do we desig
 * [How do Muds work?](http://www.livinginternet.com/d/dw.htm)
 * [Similar project for inspiration](https://github.com/Streamweaver/pogomud)
 
-<<<<<<< HEAD
 This project will grow organically, and therefore it'll be an absolute mess. This is OK.
-=======
+
 # Spinup
 
 [Go 1.6](https://golang.org/) and above is required for this project.
@@ -27,7 +26,6 @@ $ cd  $GOPATH/src/github.com/perthgophers/puddle
 $ glide install
 $ go run main.go --slack_token <SLACK_API_TOKEN>
 ```
->>>>>>> origin/develop
 
 # Collaborative etiquette
 
