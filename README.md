@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/perthgophers/puddle)](https://goreportcard.com/report/github.com/perthgophers/puddle)
+
 # Puddle
 The Perth Gophers Slackbot Mud Project
 
@@ -11,7 +13,21 @@ Puddle is a mud. Puddle is a slackbot. Puddle is a slackbot mud. How do we desig
 * [How do Muds work?](http://www.livinginternet.com/d/dw.htm)
 * [Similar project for inspiration](https://github.com/Streamweaver/pogomud)
 
+<<<<<<< HEAD
 This project will grow organically, and therefore it'll be an absolute mess. This is OK.
+=======
+# Spinup
+
+[Go 1.6](https://golang.org/) and above is required for this project.
+
+```
+$ go get github.com/perthgophers/puddle
+$ go get github.com/Masterminds/glide
+$ cd  $GOPATH/src/github.com/perthgophers/puddle
+$ glide install
+$ go run main.go --slack_token <SLACK_API_TOKEN>
+```
+>>>>>>> origin/develop
 
 # Collaborative etiquette
 
@@ -22,7 +38,9 @@ This project is an **Open Source** project encouraging everyone to be fearless i
 * This project is more like an open wiki than a standard guarded project.
 
 
-## For issue reporters
+## For issue reporters and feature requests
+
+* __Use labels!__ Use your judgement to figure out how difficult the issue is. Level 1 is for noobs, level 2 is for those proficient Go concepts such as channels & pointers, level 3 is reserved for those that are Godlike, or want to be.
 
 * __Don't be afraid!__ You don't need to submit code to contribute to the success of a project! Don't hold back on submitting issues, commenting on discussions and helping people out.
 
