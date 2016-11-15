@@ -11,7 +11,7 @@ Puddle is a mud. Puddle is a slackbot. Puddle is a slackbot mud. How do we desig
 * [How do Muds work?](http://www.livinginternet.com/d/dw.htm)
 * [Similar project for inspiration](https://github.com/Streamweaver/pogomud)
 
-This project will grow organically, and therefore it'll be an absolute mess. This is OK. However, that
+This project will grow organically, and therefore it'll be an absolute mess. This is OK.
 
 # Collaborative etiquette
 
