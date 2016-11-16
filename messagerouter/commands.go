@@ -49,7 +49,7 @@ func (mr *MessageRouter) ProcessMessage(msg *slack.Msg) error {
 		if mr.IsDev {
 			w = new(CLIResponseWriter)
 		} else {
-			w = SlackResponseWriter{mr.RTM, msg}
+			w = NewSlackResponseWriter(msg, mr.RTM)
 		}
 
 		cr := CommandRequest{username, msg.Text, msg}

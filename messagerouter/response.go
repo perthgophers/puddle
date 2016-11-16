@@ -16,6 +16,24 @@ type SlackResponseWriter struct {
 	msg *slack.Msg
 }
 
+func NewSlackResponseWriter(msg *slack.Msg, rtm *slack.RTM) *SlackResponseWriter {
+	w := SlackResponseWriter{}
+	w.msg = msg
+	w.rtm = rtm
+
+	return &w
+}
+
+//Msg sets the SlackResponseWriter Message
+func (w *SlackResponseWriter) Msg(msg *slack.Msg) {
+	w.msg = msg
+}
+
+//Msg sets the SlackResponseWriter RTM
+func (w *SlackResponseWriter) Rtm(rtm *slack.RTM) {
+	w.rtm = rtm
+}
+
 // Write writes to Slack
 func (w *SlackResponseWriter) Write(text string) error {
 	w.rtm.SendMessage(w.rtm.NewOutgoingMessage(text, w.msg.Channel))
