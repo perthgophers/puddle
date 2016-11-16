@@ -21,8 +21,3 @@ func RunCLI() {
 		fmt.Print("Puddle> ")
 	}
 }
-
-// RunCLI Prints to CLI
-func PrintCLI(text string) {
-	fmt.Print("Puddle> ")
-}
