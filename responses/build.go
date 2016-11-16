@@ -34,6 +34,9 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	}
 	w.Write(fmt.Sprintf("Selecting branch/%s...", branch))
 
+	out, _ = exec.Command("git", "pull", "origin", branch).Output()
+	w.Write(string(out))
+
 	cmd := exec.Command("git", "checkout", branch)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -45,7 +48,6 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 		cmd.Run()
 
 		w.Write(stdout.String())
-		return err
 	}
 	w.Write(stdout.String())
 	stdout.Reset()
