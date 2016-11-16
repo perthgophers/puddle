@@ -20,6 +20,9 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
+	out, _ := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
+	currentBranch := string(out)
+	w.Write("Current branch: " + currentBranch)
 	w.Write("Rebuild requested. Locked.")
 	lock.Lock()
 	defer lock.Unlock()
@@ -29,30 +32,39 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	if len(words) > 1 {
 		branch = words[1]
 	}
-	w.Write(fmt.Sprintf("Pulling origin/%s...", branch))
+	w.Write(fmt.Sprintf("Selecting branch/%s...", branch))
 
-	cmd := exec.Command("git", "pull", "origin", branch)
+	cmd := exec.Command("git", "checkout", branch)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Run()
 
 	if err := handleErr(&stderr, w); err != nil {
+		w.Write("Reverting back to " + currentBranch)
+		cmd = exec.Command("git", "checkout", currentBranch)
+		cmd.Run()
+
 		w.Write(stdout.String())
 		return err
 	}
-
 	w.Write(stdout.String())
 	stdout.Reset()
 
-	cmd = exec.Command("git", "checkout", branch)
+	w.Write(fmt.Sprintf("Pulling origin/%s...", branch))
+	cmd = exec.Command("git", "pull")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Run()
 
 	if err := handleErr(&stderr, w); err != nil {
+		w.Write("Reverting back to " + currentBranch)
+		cmd = exec.Command("git", "checkout", currentBranch)
+		cmd.Run()
+
 		w.Write(stdout.String())
 		return err
 	}
+
 	w.Write(stdout.String())
 	stdout.Reset()
 
@@ -61,6 +73,10 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd.Stderr = &stderr
 	cmd.Run()
 	if err := handleErr(&stderr, w); err != nil {
+		w.Write("Reverting back to " + currentBranch)
+		cmd = exec.Command("git", "checkout", currentBranch)
+		cmd.Run()
+
 		w.Write(stdout.String())
 		return err
 	}
