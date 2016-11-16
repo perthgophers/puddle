@@ -9,9 +9,8 @@ import (
 //Restart restarts Puddlebot.
 func Restart(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	w.Write("...Restarting...")
-	stdout.Reset()
 
-	cmd = exec.Command("./run.sh")
+	cmd := exec.Command("./run.sh")
 	cmd.Start()
 
 	os.Exit(1)
