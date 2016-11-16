@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/fatih/color"
 	"github.com/nlopes/slack"
 )
 
@@ -34,7 +33,7 @@ func GetUsername(msg slack.Msg) (string, error) {
 	}
 	userInfo, err := slackAPI.GetUserInfo(msg.User)
 	if err != nil {
-		fmt.Println(color.RedString("warning"), "No user information: ", msg.Text)
+		ErrorMessage("No user information: "+msg.Text, err.Error())
 		return "", err
 	}
 
@@ -81,7 +80,7 @@ func Build(username string, msgText string, msg slack.Msg) error {
 
 	out, err := exec.Command("git", "pull", "origin", branch).Output()
 	if err != nil {
-		SendMessage("ERROR:" + err.Error())
+		ErrorMessage("ERROR:" + err.Error())
 		return err
 	}
 	SendMessage(string(out))
@@ -93,9 +92,9 @@ func Build(username string, msgText string, msg slack.Msg) error {
 	}
 	SendMessage(string(out))
 
-	out, err = exec.Command("go", "install").Output()
+	_, err = exec.Command("go", "install").Output()
 	if err != nil {
-		SendMessage("ERROR:" + err.Error())
+		ErrorMessage("ERROR:" + err.Error())
 		return err
 	}
 	SendMessage("...Restarting...")

@@ -17,7 +17,7 @@ func BitcoinTicker(username string, msgText string, msg slack.Msg) error {
 
 	resp, err := http.Get("https://www.bitstamp.net/api/ticker/")
 	if err != nil {
-		SendMessage("Error: " + err.Error())
+		ErrorMessage("Error: " + err.Error())
 		return err
 	}
 	defer resp.Body.Close()
@@ -25,12 +25,12 @@ func BitcoinTicker(username string, msgText string, msg slack.Msg) error {
 	var httpResponse HTTPResponse
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		SendMessage("Error: " + err.Error())
+		ErrorMessage("Error: " + err.Error())
 		return err
 	}
 	err = json.Unmarshal(b, &httpResponse)
 	if err != nil {
-		SendMessage("Error: " + err.Error())
+		ErrorMessage("Error: " + err.Error())
 		return err
 	}
 	SendMessage(string(httpResponse.Last) + "USD")

@@ -1,20 +1,10 @@
-hash: bc2b812ce7d5e16ba050fe79ef6474d256bde8e604fc8b425dfa279da6b76a01
-updated: 2016-11-15T13:55:02.754767979+08:00
+hash: b0b9a016b7766ef8cdcc713a2252127485f90b53cd78a0ef5a65e9626cc3116d
+updated: 2016-11-16T15:36:09.623992348+08:00
 imports:
-- name: github.com/fatih/color
-  version: bf82308e8c8546dc2b945157173eb8a959ae9505
-- name: github.com/mattn/go-colorable
-  version: d228849504861217f796da67fae4f6e347643f15
-- name: github.com/mattn/go-isatty
-  version: 66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8
 - name: github.com/nlopes/slack
   version: e595e9d8590a04ff76407e4e7d1791d25b095c66
 - name: golang.org/x/net
   version: 5bc3a08dc8042ac11f2752c257a2367c02ba32e8
   subpackages:
   - websocket
-- name: golang.org/x/sys
-  version: b699b7032584f0953262cb2788a0ca19bb494703
-  subpackages:
-  - unix
 testImports: []
