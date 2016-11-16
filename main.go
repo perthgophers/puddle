@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/perthgophers/puddle/puddle"
+	"github.com/perthgophers/puddle/messagerouter"
+	"github.com/perthgophers/puddle/responses"
 	"os"
 	"os/exec"
 )
@@ -11,6 +12,8 @@ var SLACKTOKEN string
 
 // GITTAG Current Git Tag
 var GITTAG string
+
+const CHANNEL = "C32K3QDFE"
 
 func init() {
 	SLACKTOKEN = os.Getenv("SLACKTOKEN")
@@ -29,5 +32,8 @@ func init() {
 }
 
 func main() {
-	puddle.Run(SLACKTOKEN, GITTAG)
+	mr := messagerouter.New(SLACKTOKEN, GITTAG, CHANNEL)
+
+	responses.Init(mr)
+	mr.Run()
 }

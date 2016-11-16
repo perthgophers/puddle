@@ -1,15 +1,14 @@
-package puddle
+package responses
 
 import (
 	"encoding/json"
+	"github.com/perthgophers/puddle/messagerouter"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/nlopes/slack"
 )
 
 // BitcoinTicker will return a string containing the current rate in USD
-func BitcoinTicker(username string, msgText string, msg slack.Msg) error {
+func BitcoinTicker(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 
 	type HTTPResponse struct {
 		Last string `json:"last"`
@@ -17,7 +16,7 @@ func BitcoinTicker(username string, msgText string, msg slack.Msg) error {
 
 	resp, err := http.Get("https://www.bitstamp.net/api/ticker/")
 	if err != nil {
-		ErrorMessage("Error: " + err.Error())
+		w.WriteError("Error: " + err.Error())
 		return err
 	}
 	defer resp.Body.Close()
@@ -25,14 +24,18 @@ func BitcoinTicker(username string, msgText string, msg slack.Msg) error {
 	var httpResponse HTTPResponse
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		ErrorMessage("Error: " + err.Error())
+		w.WriteError("Error: " + err.Error())
 		return err
 	}
 	err = json.Unmarshal(b, &httpResponse)
 	if err != nil {
-		ErrorMessage("Error: " + err.Error())
+		w.WriteError("Error: " + err.Error())
 		return err
 	}
-	SendMessage(string(httpResponse.Last) + "USD")
+	w.Write(string(httpResponse.Last) + "USD")
 	return nil
+}
+
+func init() {
+	Handle("!bitcoin", BitcoinTicker)
 }
