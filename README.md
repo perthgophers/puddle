@@ -26,7 +26,7 @@ $ go get github.com/perthgophers/puddle
 $ go get github.com/Masterminds/glide
 $ cd  $GOPATH/src/github.com/perthgophers/puddle
 $ glide install
-$ go run main.go --slack_token <SLACK_API_TOKEN>
+$ SLACKTOKEN=<SLACK_API_TOKEN> go run main.go
 ```
 
 # Collaborative etiquette
