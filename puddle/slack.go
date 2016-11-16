@@ -85,6 +85,13 @@ func Build(username string, msgText string, msg slack.Msg) error {
 	}
 	SendMessage(string(out))
 
+	out, err = exec.Command("git", "checkout", branch).Output()
+	if err != nil {
+		SendMessage("ERROR:" + err.Error())
+		return err
+	}
+	SendMessage(string(out))
+
 	out, err = exec.Command("go", "install").Output()
 	if err != nil {
 		SendMessage("ERROR:" + err.Error())
