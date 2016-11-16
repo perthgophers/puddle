@@ -29,6 +29,7 @@ var slackAPI *slack.Client
 func Run(token, gittag string) {
 
 	if ISDEV == "true" || token == "" {
+		ISDEV = "true"
 		RunCLI()
 		return
 	}

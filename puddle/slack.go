@@ -65,9 +65,20 @@ func SendMessage(text string) error {
 }
 
 // Build will pull the latest git master and rebuild. It will then restart puddlebot
+// Syntax: `!build <branch-name>`
+// Example: `!build master`
 func Build(username string, msgText string, msg slack.Msg) error {
-	SendMessage("pulling origin/master...")
-	out, err := exec.Command("git", "pull", "origin", "master").Output()
+	SendMessage("Rebuild requested. Locked.")
+	lock.Lock()
+
+	words := strings.Split(msgText, " ")
+	branch := "master"
+	if len(words) > 1 {
+		branch = words[1]
+	}
+	SendMessage(fmt.Sprintf("pulling origin/%s...", branch))
+
+	out, err := exec.Command("git", "pull", "origin", branch).Output()
 	if err != nil {
 		SendMessage("ERROR:" + err.Error())
 		return err
