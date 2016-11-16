@@ -8,8 +8,6 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
-
-	"github.com/fatih/color"
 	"github.com/nlopes/slack"
 )
 
