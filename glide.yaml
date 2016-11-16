@@ -1,4 +1,3 @@
 package: github.com/perthgophers/puddle
 import:
 - package: github.com/nlopes/slack
-- package: github.com/fatih/color

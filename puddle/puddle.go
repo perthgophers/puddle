@@ -88,3 +88,9 @@ Loop:
 		}
 	}
 }
+
+func ErrorMessage(errText ...string) {
+	for _, v := range errText {
+		SendMessage(":poop: " + v + " :poop:")
+	}
+}
