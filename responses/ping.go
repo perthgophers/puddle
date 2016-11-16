@@ -6,7 +6,7 @@ import (
 
 // Ping responds to !ping with a pong!
 func Ping(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	w.Write("Pong!")
+	w.Write("pong!")
 	return nil
 }
 

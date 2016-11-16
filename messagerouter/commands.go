@@ -18,7 +18,7 @@ type CommandRequest struct {
 	Message  *slack.Msg
 }
 
-//A Handler responds to a slack or cli message request.
+// MessageHandler responds to a slack or cli message request.
 type MessageHandler func(*CommandRequest, ResponseWriter) error
 
 // GetUsername retrieves human readable username information from SLACK API using Slack username ID
@@ -67,7 +67,7 @@ func (mr *MessageRouter) ProcessMessage(msg *slack.Msg) error {
 	return nil
 }
 
-//hasPrefix checks for command prefix
+// hasPrefix checks for command prefix
 func hasPrefix(s string) bool {
 	return strings.HasPrefix(s, "!") || strings.HasPrefix(s, "%") || strings.HasPrefix(s, "#")
 }

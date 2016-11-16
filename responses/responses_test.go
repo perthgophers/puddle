@@ -39,7 +39,7 @@ func TestPing(t *testing.T) {
 	}
 
 	w := TestResponseWriter{
-		ExpectedMessage: "Pong!",
+		ExpectedMessage: "pong!",
 	}
 
 	Ping(&cr, &w)
@@ -47,7 +47,7 @@ func TestPing(t *testing.T) {
 	if w.ExpectedMessage != w.ActualMessage {
 		t.Error(
 			"For", "!ping",
-			"expected", "!Pong",
+			"expected", w.ExpectedMessage,
 			"got", w.ActualMessage,
 		)
 	}

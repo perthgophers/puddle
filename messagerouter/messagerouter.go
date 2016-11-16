@@ -19,7 +19,7 @@ type MessageRouter struct {
 	IsDev   bool
 }
 
-//Returns a new Pudddle Messagerouter
+// New Returns a new Puddle Messagerouter
 func New(token, gittag, channel string) *MessageRouter {
 	mr := MessageRouter{
 		token:   token,
@@ -52,10 +52,9 @@ func (mr *MessageRouter) Run() {
 		mr.runSlack()
 	}
 
-	// RunCLI Starts the command line input shell
-
 }
 
+// runCLI Starts the slack API & connects to #puddle
 func (mr *MessageRouter) runSlack() {
 	go mr.RTM.ManageConnection()
 Loop:
@@ -69,9 +68,6 @@ Loop:
 
 			case *slack.ConnectedEvent:
 				log.Println("######### Connected to Slack #########")
-				// log.Println("Infos:", ev.Info)
-				// log.Println("Connection counter:", ev.ConnectionCount)
-				// Replace #general with your Channel ID
 				mr.RTM.SendMessage(mr.RTM.NewOutgoingMessage(fmt.Sprintf("... and I'm back! Git tag: %s", mr.gittag), mr.channel))
 
 			case *slack.MessageEvent:
@@ -92,15 +88,15 @@ Loop:
 				log.Printf("Invalid credentials")
 				break Loop
 
+			// Ignore other events..
 			default:
 
-				// Ignore other events..
-				// log.Printf("Unexpected: %v\n", msg.Data)
 			}
 		}
 	}
 }
 
+// runCLI Starts the command line input shell
 func (mr *MessageRouter) runCLI() {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println(fmt.Sprintf("... and I'm back! Git tag: %s", mr.gittag))
