@@ -11,18 +11,20 @@ import (
 // SLACKTOKEN is the slack API token
 var SLACKTOKEN string
 
-//Current Git Tag
+// Current Git Tag
 var GITTAG string
 
 // CHANNEL is the Slack ID for channel #puddle
 var CHANNEL string = "C32K3QDFE"
 
+// ISDEV Whether Puddle is in Dev or CLI mode
 var ISDEV string = os.Getenv("PUDDLEDEV")
 
 var rtm *slack.RTM
 var slackAPI *slack.Client
 
-//Run main Puddle process, defau
+// Run Starts main Puddle process, default
+// Connects to Slack & starts Slack API processing
 func Run(token, gittag string) {
 
 	if ISDEV == "true" || SLACKTOKEN == "" {
