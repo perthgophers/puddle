@@ -3,6 +3,7 @@ package messagerouter
 import (
 	"fmt"
 	"github.com/nlopes/slack"
+	"strings"
 )
 
 type ResponseWriter interface {
@@ -12,7 +13,7 @@ type ResponseWriter interface {
 
 type SlackResponseWriter struct {
 	rtm *slack.RTM
-	msg *slack.Message
+	msg *slack.Msg
 }
 
 // Write writes to Slack
@@ -24,7 +25,11 @@ func (w *SlackResponseWriter) Write(text string) error {
 
 // WriteError writes an error to Slack
 func (w *SlackResponseWriter) WriteError(errText string) error {
-	return w.Write(":poop: " + errText + " :poop:")
+	lines := strings.Split(errText, "\n")
+	for _, value := range lines {
+		w.Write(":poop: " + value + " :poop:")
+	}
+	return nil
 }
 
 //CLIResponseWriter handles writing to the command line
