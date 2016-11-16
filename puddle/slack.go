@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+
 	"github.com/nlopes/slack"
 )
 
@@ -91,7 +92,7 @@ func Build(username string, msgText string, msg slack.Msg) error {
 	}
 	SendMessage(string(out))
 
-	out, err = exec.Command("go", "install").Output()
+	_, err = exec.Command("go", "install").Output()
 	if err != nil {
 		ErrorMessage("ERROR:" + err.Error())
 		return err
