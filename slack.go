@@ -3,13 +3,14 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/nlopes/slack"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+
+	"github.com/fatih/color"
+	"github.com/nlopes/slack"
 )
 
 var lock = new(sync.Mutex)
@@ -87,4 +88,5 @@ func RegisterAdminCommand(cmdString string, fn func(string, string, slack.Msg) e
 
 func init() {
 	RegisterAdminCommand("build", Build)
+	RegisterAdminCommand("bitcoin", BitcoinTicker)
 }
