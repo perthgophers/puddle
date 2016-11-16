@@ -34,6 +34,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd := exec.Command("git", "pull", "origin", branch)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
+	cmd.Run()
 
 	if err := handleErr(&stderr, w); err != nil {
 		return err
@@ -45,6 +46,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd = exec.Command("git", "checkout", branch)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
+	cmd.Run()
 
 	if err := handleErr(&stderr, w); err != nil {
 		return err
@@ -55,6 +57,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd = exec.Command("go", "install")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
+	cmd.Run()
 	if err := handleErr(&stderr, w); err != nil {
 		return err
 	}
