@@ -9,7 +9,7 @@ import (
 // SLACKTOKEN is the slack API token
 var SLACKTOKEN string
 
-//Current Git Tag
+// GITTAG Current Git Tag
 var GITTAG string
 
 func init() {

@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// RunCLI Starts the command line input shell
 func RunCLI() {
 	fmt.Println("Starting Puddle CLI Input...\n")
 	scanner := bufio.NewScanner(os.Stdin)
@@ -21,6 +22,7 @@ func RunCLI() {
 	}
 }
 
+// RunCLI Prints to CLI
 func PrintCLI(text string) {
 	fmt.Print("Puddle> ")
 }

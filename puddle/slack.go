@@ -15,8 +15,9 @@ import (
 var lock = new(sync.Mutex)
 var adminCommands = make(map[string]func(string, string, slack.Msg) error)
 
-//Processes messages from Slack channel #puddle
-//Ideally, this should be a router
+// ProcessMessage performs basic routing on Slack messages in the channel #puddle
+// Eventually, this will feed into two routers
+// One for admin commands & one for mud commands
 func ProcessMessage(msg slack.Msg) error {
 	if strings.HasPrefix(msg.Text, "!") {
 		username, _ := GetUsername(msg)
@@ -25,7 +26,7 @@ func ProcessMessage(msg slack.Msg) error {
 	return nil
 }
 
-//Retreive username from SLACK API
+// GetUsername retrieves human readable username information from SLACK API using Slack username ID
 func GetUsername(msg slack.Msg) (string, error) {
 	if ISDEV == "true" {
 		return "cliuser", nil
@@ -39,7 +40,7 @@ func GetUsername(msg slack.Msg) (string, error) {
 	return userInfo.Name, nil
 }
 
-//Parse message and search admin commands and feed message
+// ProcessAdminCommand routes admin commands, by accessing functions in a map
 func ProcessAdminCommand(username string, msgText string, msg slack.Msg) {
 	words := strings.Split(msgText, " ")
 	cmdString := strings.TrimPrefix(words[0], "!")
@@ -51,7 +52,8 @@ func ProcessAdminCommand(username string, msgText string, msg slack.Msg) {
 	}
 }
 
-//Simple send message to @username: <msg>
+// SendMessage send slack or cli message
+// shorthand for rtm.SendMessage(rtm.NewOutgoingMessage(text, CHANNEL))
 func SendMessage(text string) error {
 	if ISDEV == "true" {
 		fmt.Println(">> ", text)
@@ -62,7 +64,7 @@ func SendMessage(text string) error {
 	return nil
 }
 
-//Pull latest git master and rebuild, restart puddlebot
+// Build will pull the latest git master and rebuild. It will then restart puddlebot
 func Build(username string, msgText string, msg slack.Msg) error {
 	SendMessage("pulling origin/master...")
 	out, err := exec.Command("git", "pull", "origin", "master").Output()
@@ -86,7 +88,8 @@ func Build(username string, msgText string, msg slack.Msg) error {
 	return err
 }
 
-//Register admin command
+// RegisterAdminCommand Register an admin command with puddle bot
+// Accepts functions in the form of `func(string, string, slack.Msg)`
 func RegisterAdminCommand(cmdString string, fn func(string, string, slack.Msg) error) error {
 	log.Println(fmt.Sprintf("Registering new admin command <%s>", cmdString))
 
