@@ -21,6 +21,11 @@ func init() {
 	} else {
 		GITTAG = string(out)
 	}
+	GITTAG += "/"
+	out, err = exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
+	if err == nil {
+		GITTAG += string(out)
+	}
 }
 
 func main() {

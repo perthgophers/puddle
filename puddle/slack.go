@@ -3,13 +3,14 @@ package puddle
 import (
 	"errors"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/nlopes/slack"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+
+	"github.com/fatih/color"
+	"github.com/nlopes/slack"
 )
 
 var lock = new(sync.Mutex)
@@ -85,6 +86,13 @@ func Build(username string, msgText string, msg slack.Msg) error {
 	}
 	SendMessage(string(out))
 
+	out, err = exec.Command("git", "checkout", branch).Output()
+	if err != nil {
+		SendMessage("ERROR:" + err.Error())
+		return err
+	}
+	SendMessage(string(out))
+
 	out, err = exec.Command("go", "install").Output()
 	if err != nil {
 		ErrorMessage("ERROR:" + err.Error())
@@ -117,4 +125,5 @@ func RegisterAdminCommand(cmdString string, fn func(string, string, slack.Msg) e
 
 func init() {
 	RegisterAdminCommand("build", Build)
+	RegisterAdminCommand("bitcoin", BitcoinTicker)
 }
