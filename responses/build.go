@@ -29,7 +29,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	if len(words) > 1 {
 		branch = words[1]
 	}
-	w.Write(fmt.Sprintf("pulling origin/%s...", branch))
+	w.Write(fmt.Sprintf("Pulling origin/%s...", branch))
 
 	cmd := exec.Command("git", "pull", "origin", branch)
 	cmd.Stdout = &stdout
@@ -37,6 +37,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd.Run()
 
 	if err := handleErr(&stderr, w); err != nil {
+		w.Write(stdout.String())
 		return err
 	}
 
@@ -49,6 +50,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd.Run()
 
 	if err := handleErr(&stderr, w); err != nil {
+		w.Write(stdout.String())
 		return err
 	}
 	w.Write(stdout.String())
@@ -59,6 +61,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd.Stderr = &stderr
 	cmd.Run()
 	if err := handleErr(&stderr, w); err != nil {
+		w.Write(stdout.String())
 		return err
 	}
 	w.Write("...Restarting...")
@@ -74,7 +77,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 func handleErr(stderr *bytes.Buffer, w messagerouter.ResponseWriter) error {
 	if stderr.Len() > 0 {
 		errString := stderr.String()
-		w.WriteError("ERROR:" + errString)
+		w.WriteError(errString)
 		return errors.New(errString)
 	}
 	return nil
