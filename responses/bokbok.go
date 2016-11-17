@@ -16,6 +16,7 @@ import (
 // BokBok is a smart chat bot
 type BokBok struct {
 	db        *bolt.DB
+	Channel   string
 	prefixLen int
 }
 
@@ -38,6 +39,14 @@ func NewBokBok(prefixLen int) *BokBok {
 	return bkbk
 }
 
+// RespondHere allows the user to apply a channel to respond to
+// Triggered by !bokbok <channel>
+func (bkbk *BokBok) RespondHere(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+	bkbk.Channel = cr.Message.User
+
+	w.Write("Channel has been set")
+}
+
 // Processes Message builds or amends the Markov Chain for "all" and the individual user
 func (bkbk *BokBok) ProcessMessage(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	bkbk.db.Update(func(tx *bolt.Tx) error {
@@ -56,7 +65,10 @@ func (bkbk *BokBok) ProcessMessage(cr *messagerouter.CommandRequest, w messagero
 
 // MaybeRespond might respond, or it might not, for top kek
 func (bkbk *BokBok) MaybeRespond(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	if cr.Message.Channel == "C33C4MJSH" && bkbk.YesNo() {
+	if cr.Message.User != "0" && cr.Message.Channel != bkbk.Channel {
+		return nil
+	}
+	if bkbk.YesNo() {
 		allch := bkbk.Chain("all")
 		w.Write(fmt.Sprintf("@%s: %s", cr.Username, allch.Generate()))
 	}
@@ -209,4 +221,5 @@ func init() {
 	bkbk := NewBokBok(2)
 	Handle("*", bkbk.ProcessMessage)
 	Handle("*", bkbk.MaybeRespond)
+	Handle("!bokbok", bkbk.RespondHere)
 }
