@@ -86,8 +86,9 @@ func hasPrefix(s string) bool {
 	return strings.HasPrefix(s, "!") || strings.HasPrefix(s, "%") || strings.HasPrefix(s, "#")
 }
 
-// Handle registers the handler for the given command
+// Handle registers the handler for the given command, or register a standard message parsing function
 // Must match a command prefix, `!` for admin commands, `%` for general commands & `#` for MUD commands
+// For functions that will parse all messages (sans command prefix), the cmdString must equal "*"
 func (mr *MessageRouter) Handle(cmdString string, fn MessageHandler) error {
 	if !hasPrefix(cmdString) && cmdString != "*" {
 		log.Fatal(cmdString, " does not have a command prefix")
