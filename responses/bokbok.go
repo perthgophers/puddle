@@ -42,7 +42,7 @@ func NewBokBok(prefixLen int) *BokBok {
 // RespondHere allows the user to apply a channel to respond to
 // Triggered by !bokbok <channel>
 func (bkbk *BokBok) RespondHere(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	bkbk.Channel = cr.Message.User
+	bkbk.Channel = cr.Message.Channel
 
 	w.Write("Channel has been set")
 
@@ -65,14 +65,23 @@ func (bkbk *BokBok) ProcessMessage(cr *messagerouter.CommandRequest, w messagero
 	return nil
 }
 
+//Respond reponds to message
+func (bkbk *BokBok) Respond(w messagerouter.ResponseWriter) {
+	allch := bkbk.Chain("all")
+	w.Write(fmt.Sprintf("@%s: %s", cr.Username, allch.Generate()))
+}
+
 // MaybeRespond might respond, or it might not, for top kek
 func (bkbk *BokBok) MaybeRespond(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+	if cr.Message.Channel == cr.Message.User {
+		bkbk.Respond(w)
+		return nil
+	}
 	if cr.Message.User != "0" && cr.Message.Channel != bkbk.Channel {
 		return nil
 	}
 	if bkbk.YesNo() {
-		allch := bkbk.Chain("all")
-		w.Write(fmt.Sprintf("@%s: %s", cr.Username, allch.Generate()))
+		bkbk.Respond(w)
 	}
 
 	return nil
