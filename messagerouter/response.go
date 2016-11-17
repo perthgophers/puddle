@@ -8,6 +8,7 @@ import (
 
 type ResponseWriter interface {
 	Write(string) error
+	WriteChannel(string, string) error
 	WriteError(string) error
 }
 
@@ -34,6 +35,12 @@ func (w *SlackResponseWriter) Rtm(rtm *slack.RTM) {
 	w.rtm = rtm
 }
 
+// WriteChannel sends message to particular channel
+func (w *SlackResponseWriter) WriteChannel(channel string, text string) error {
+	w.rtm.SendMessage(w.rtm.NewOutgoingMessage(text, w.msg.Channel))
+	return nil
+}
+
 // Write writes to Slack
 func (w *SlackResponseWriter) Write(text string) error {
 	w.rtm.SendMessage(w.rtm.NewOutgoingMessage(text, w.msg.Channel))
@@ -52,6 +59,13 @@ func (w *SlackResponseWriter) WriteError(errText string) error {
 
 //CLIResponseWriter handles writing to the command line
 type CLIResponseWriter struct {
+}
+
+// Write writes to CLI, prints channel it would go to if via Slack
+func (w *CLIResponseWriter) WriteChannel(channel string, text string) error {
+	fmt.Println(">> "+channel, text)
+
+	return nil
 }
 
 // Write writes to CLI
