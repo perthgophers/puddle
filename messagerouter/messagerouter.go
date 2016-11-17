@@ -106,8 +106,9 @@ func (mr *MessageRouter) runCLI() {
 	for scanner.Scan() {
 		line := scanner.Text()
 		msg := slack.Msg{
-			Text: line,
-			User: "0",
+			Text:    line,
+			User:    "0",
+			Channel: "0",
 		}
 		mr.ProcessMessage(&msg)
 		fmt.Print("Puddle> ")

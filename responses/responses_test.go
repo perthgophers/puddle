@@ -27,6 +27,7 @@ func (w *TestResponseWriter) Write(text string) error {
 }
 
 func (w *TestResponseWriter) WriteChannel(errText string) error {
+	return nil
 }
 
 func (w *TestResponseWriter) WriteError(errText string) error {
