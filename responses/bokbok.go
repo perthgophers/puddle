@@ -45,6 +45,8 @@ func (bkbk *BokBok) RespondHere(cr *messagerouter.CommandRequest, w messageroute
 	bkbk.Channel = cr.Message.User
 
 	w.Write("Channel has been set")
+
+	return nil
 }
 
 // Processes Message builds or amends the Markov Chain for "all" and the individual user
