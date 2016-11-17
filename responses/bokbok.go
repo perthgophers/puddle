@@ -66,7 +66,7 @@ func (bkbk *BokBok) ProcessMessage(cr *messagerouter.CommandRequest, w messagero
 }
 
 //Respond reponds to message
-func (bkbk *BokBok) Respond(w messagerouter.ResponseWriter) {
+func (bkbk *BokBok) Respond(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) {
 	allch := bkbk.Chain("all")
 	w.Write(fmt.Sprintf("@%s: %s", cr.Username, allch.Generate()))
 }
@@ -74,14 +74,14 @@ func (bkbk *BokBok) Respond(w messagerouter.ResponseWriter) {
 // MaybeRespond might respond, or it might not, for top kek
 func (bkbk *BokBok) MaybeRespond(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	if cr.Message.Channel == cr.Message.User {
-		bkbk.Respond(w)
+		bkbk.Respond(cr, w)
 		return nil
 	}
 	if cr.Message.User != "0" && cr.Message.Channel != bkbk.Channel {
 		return nil
 	}
 	if bkbk.YesNo() {
-		bkbk.Respond(w)
+		bkbk.Respond(cr, w)
 	}
 
 	return nil
