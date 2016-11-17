@@ -26,6 +26,9 @@ func (w *TestResponseWriter) Write(text string) error {
 	return nil
 }
 
+func (w *TestResponseWriter) WriteChannel(errText string) error {
+}
+
 func (w *TestResponseWriter) WriteError(errText string) error {
 	return w.Write(":poop: " + errText + " :poop:")
 }
