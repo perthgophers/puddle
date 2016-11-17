@@ -11,21 +11,23 @@ import (
 
 // MessageRouter does stuff with messages.
 type MessageRouter struct {
-	API     *slack.Client
-	RTM     *slack.RTM
-	token   string
-	channel string
-	gittag  string
-	IsDev   bool
+	API         *slack.Client
+	RTM         *slack.RTM
+	token       string
+	channel     string
+	spamchannel string
+	gittag      string
+	IsDev       bool
 }
 
 // New Returns a new Puddle Messagerouter
-func New(token, gittag, channel string) *MessageRouter {
+func New(token, gittag, channel string, spamchannel string) *MessageRouter {
 	mr := MessageRouter{
-		token:   token,
-		gittag:  gittag,
-		channel: channel,
-		IsDev:   false,
+		token:       token,
+		gittag:      gittag,
+		channel:     channel,
+		spamchannel: spamchannel,
+		IsDev:       false,
 	}
 	if os.Getenv("PUDDLEDEV") != "" || token == "" {
 		mr.IsDev = true
@@ -105,6 +107,7 @@ func (mr *MessageRouter) runCLI() {
 		line := scanner.Text()
 		msg := slack.Msg{
 			Text: line,
+			User: "0",
 		}
 		mr.ProcessMessage(&msg)
 		fmt.Print("Puddle> ")

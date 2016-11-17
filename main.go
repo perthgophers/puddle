@@ -14,6 +14,7 @@ var SLACKTOKEN string
 var GITTAG string
 
 const CHANNEL = "C32K3QDFE"
+const SPAMCHANNEL = "C33C4MJSH"
 
 func init() {
 	SLACKTOKEN = os.Getenv("SLACKTOKEN")
@@ -32,7 +33,7 @@ func init() {
 }
 
 func main() {
-	mr := messagerouter.New(SLACKTOKEN, GITTAG, CHANNEL)
+	mr := messagerouter.New(SLACKTOKEN, GITTAG, CHANNEL, SPAMCHANNEL)
 
 	responses.Init(mr)
 	mr.Run()
