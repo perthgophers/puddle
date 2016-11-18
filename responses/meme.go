@@ -13,22 +13,26 @@ type cookiejar struct {
 	jar map[string][]*http.Cookie
 }
 
+// SetCookies to set cookies into HTTP lib cookiejar
 func (p *cookiejar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 	fmt.Printf("The URL is %s\n", u.String())
-	fmt.Printf("The cookie being set is : %s\n", cookies)
+	fmt.Printf("The cookie being set is: %s\n", cookies)
 	p.jar[u.Host] = cookies
 }
 
-func (p *cookiejar) Cookies(u *url.URL) []*http.Cookie {
+// Cookies to get cookies from HTTP lib cookiejar
+func (cj *cookiejar) Cookies(u *url.URL) []*http.Cookie {
 	fmt.Printf("The URL is %s\n", u.String())
-	fmt.Printf("The cookie being returned is : %s\n", p.jar[u.Host])
-	return p.jar[u.Host]
+	fmt.Printf("The cookie being returned is : %s\n", cj.jar[u.Host])
+	return cj.jar[u.Host]
 }
 
+// MemeGenerator will post the latest meme from imgur meme gallery
 func MemeGenerator(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	// Create cookiejar so we can authenticate to imgur API
 	// http://stackoverflow.com/questions/11361431/authenticated-http-client-requests-from-golang
 
+	// HTTP object to capture imgur API responses
 	type HTTPResponse struct {
 		Data []struct {
 			AccountID    int         `json:"account_id"`
@@ -63,18 +67,17 @@ func MemeGenerator(cr *messagerouter.CommandRequest, w messagerouter.ResponseWri
 	}
 
 	client := &http.Client{}
-	jar := &cookiejar{}
-	jar.jar = make(map[string][]*http.Cookie)
-	client.Jar = jar
+	cjar := &cookiejar{}
+	cjar.jar = make(map[string][]*http.Cookie)
+	client.Jar = cjar
 
 	// Authenticate
-	//req, err := http.NewRequest("GET", "https://api.imgur.com/oauth2/authorize?client_id=91101181cd13628&response_type=token&state=auth", nil)
 	req, err := http.NewRequest("GET", "https://api.imgur.com/3/g/memes/", nil)
 	req.Header.Set("Authorization", "Client-ID 91101181cd13628")
 	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println("Unable to get auth token from imgur api")
+		fmt.Println("Unable to get auth token from imgur api: ", err)
 	}
 
 	defer resp.Body.Close()
@@ -82,7 +85,7 @@ func MemeGenerator(cr *messagerouter.CommandRequest, w messagerouter.ResponseWri
 	var httpResponse HTTPResponse
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Unable to read httpResponse")
+		fmt.Println("Unable to read", err)
 	}
 
 	err = json.Unmarshal(b, &httpResponse)
