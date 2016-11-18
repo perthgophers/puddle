@@ -13,18 +13,18 @@ type cookiejar struct {
 	jar map[string][]*http.Cookie
 }
 
-// Used to set cookies into HTTP lib cookiejar
+// SetCookies to set cookies into HTTP lib cookiejar
 func (p *cookiejar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 	fmt.Printf("The URL is %s\n", u.String())
-	fmt.Printf("The cookie being set is : %s\n", cookies)
+	fmt.Printf("The cookie being set is: %s\n", cookies)
 	p.jar[u.Host] = cookies
 }
 
-// Used to get cookies from HTTP lib cookiejar
-func (p *cookiejar) Cookies(u *url.URL) []*http.Cookie {
+// Cookies to get cookies from HTTP lib cookiejar
+func (cj *cookiejar) Cookies(u *url.URL) []*http.Cookie {
 	fmt.Printf("The URL is %s\n", u.String())
-	fmt.Printf("The cookie being returned is : %s\n", p.jar[u.Host])
-	return p.jar[u.Host]
+	fmt.Printf("The cookie being returned is : %s\n", cj.jar[u.Host])
+	return cj.jar[u.Host]
 }
 
 // MemeGenerator will post the latest meme from imgur meme gallery
@@ -77,7 +77,7 @@ func MemeGenerator(cr *messagerouter.CommandRequest, w messagerouter.ResponseWri
 	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println("Unable to get auth token from imgur api", err)
+		fmt.Println("Unable to get auth token from imgur api: ", err)
 	}
 
 	defer resp.Body.Close()
