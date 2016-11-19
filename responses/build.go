@@ -69,7 +69,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 
 	w.Write(stdout.String())
 	if stderr.Len() > 0 {
-		w.Write(stderr.String())
+		w.WriteError("Error building:" + stderr.String())
 	}
 
 	Restart(cr, w)
