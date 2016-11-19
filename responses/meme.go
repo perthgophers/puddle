@@ -74,7 +74,7 @@ func MemeGenerator(cr *messagerouter.CommandRequest, w messagerouter.ResponseWri
 	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println("Unable to get auth token from imgur api")
+		w.WriteError(fmt.Sprintf("Unable to get auth token from imgur api: %s", err))
 	}
 
 	defer resp.Body.Close()
@@ -82,13 +82,13 @@ func MemeGenerator(cr *messagerouter.CommandRequest, w messagerouter.ResponseWri
 	var httpResponse HTTPResponse
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Unable to read httpResponse")
+		w.WriteError(fmt.Sprintf("Unable to read httpResponse: %s", err))
 	}
 
 	err = json.Unmarshal(b, &httpResponse)
 
 	if err != nil {
-		fmt.Println("Unable to unmarshall", err)
+		w.WriteError(fmt.Sprintf("Unable to unmarshall: %s", err))
 	}
 
 	// Post meme to slack channel using RTM
