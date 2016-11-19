@@ -24,7 +24,7 @@ type BokBok struct {
 func NewBokBok(prefixLen int) *BokBok {
 	var err error = nil
 	bkbk := new(BokBok)
-	bkbk.db, err = bolt.Open("./markovchains.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+	bkbk.db, err = bolt.Open("./markovchains.db", 0600, &bolt.Options{Timeout: 10 * time.Second})
 	if err != nil {
 		log.Fatal(err)
 	}
