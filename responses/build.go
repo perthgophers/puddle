@@ -12,6 +12,7 @@ import (
 
 var lock = new(sync.Mutex)
 
+// Checkout pulls & checks out a branch
 func Checkout(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
