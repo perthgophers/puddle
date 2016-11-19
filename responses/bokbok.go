@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 )
@@ -24,9 +25,13 @@ type BokBok struct {
 func NewBokBok(prefixLen int) *BokBok {
 	var err error = nil
 	bkbk := new(BokBok)
-	bkbk.db, err = bolt.Open("./markovchains.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+	bkbk.db, err = bolt.Open("./markovchains.db", 0600, &bolt.Options{Timeout: 10 * time.Second})
 	if err != nil {
-		log.Fatal(err)
+		os.Remove("./markovchains.db")
+		bkbk.db, err = bolt.Open("./markovchains.db", 0600, &bolt.Options{Timeout: 10 * time.Second})
+		if err != nil {
+			log.Fatal("Can't open markovchains database, tried deleting and reopening. Fail.")
+		}
 	}
 
 	bkbk.db.Update(func(tx *bolt.Tx) error {

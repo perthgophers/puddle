@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/perthgophers/puddle/messagerouter"
-	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -13,13 +12,38 @@ import (
 
 var lock = new(sync.Mutex)
 
+// Checkout pulls & checks out a branch
+func Checkout(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	words := strings.Split(cr.Text, " ")
+
+	if len(words) < 2 {
+		w.Write("I need a branch to continue with this operation")
+		return nil
+	}
+	branch := words[1]
+
+	cmd := exec.Command("git", "pull", "origin", branch)
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	cmd = exec.Command("git", "checkout", branch)
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	w.Write(stdout.String())
+	if stderr.Len() > 0 {
+		w.Write(stdout.String())
+	}
+
+	return nil
+}
+
 // Build will pull the latest git master and rebuild. It will then restart puddlebot
 // Syntax: `!build <branch-name>`
 // Example: `!build master`
 func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
-
 	out, _ := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
 	currentBranch := string(out)
 	w.Write("Current branch: " + currentBranch)
@@ -34,67 +58,29 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	}
 	w.Write(fmt.Sprintf("Selecting branch/%s...", branch))
 
-	out, _ = exec.Command("git", "pull", "origin", branch).Output()
-	w.Write(string(out))
+	Checkout(cr, w)
 
-	cmd := exec.Command("git", "checkout", branch)
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	cmd := exec.Command("go", "install")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Run()
-
-	if err := handleErr(&stderr, w); err != nil {
-		w.Write("Reverting back to " + currentBranch)
-		cmd = exec.Command("git", "checkout", currentBranch)
-		cmd.Run()
-
-		w.Write(stdout.String())
-	}
-	w.Write(stdout.String())
-	stdout.Reset()
-
-	w.Write(fmt.Sprintf("Pulling origin/%s...", branch))
-	cmd = exec.Command("git", "pull")
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	cmd.Run()
-
-	if err := handleErr(&stderr, w); err != nil {
-		w.Write("Reverting back to " + currentBranch)
-		cmd = exec.Command("git", "checkout", currentBranch)
-		cmd.Run()
-
-		w.Write(stdout.String())
-		return err
-	}
 
 	w.Write(stdout.String())
-	stdout.Reset()
-
-	cmd = exec.Command("go", "install")
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	cmd.Run()
-	if err := handleErr(&stderr, w); err != nil {
-		w.Write("Reverting back to " + currentBranch)
-		cmd = exec.Command("git", "checkout", currentBranch)
-		cmd.Run()
-
-		w.Write(stdout.String())
-		return err
+	if stderr.Len() > 0 {
+		w.WriteError("Error building:" + stderr.String())
 	}
-	w.Write("...Restarting...")
-	stdout.Reset()
 
-	cmd = exec.Command("./run.sh")
-	cmd.Start()
-
-	os.Exit(1)
+	Restart(cr, w)
 	return nil
 }
 
 func handleErr(stderr *bytes.Buffer, w messagerouter.ResponseWriter) error {
 	if stderr.Len() > 0 {
 		errString := stderr.String()
+		stderr.Reset()
 		w.WriteError(errString)
 		return errors.New(errString)
 	}
@@ -102,5 +88,6 @@ func handleErr(stderr *bytes.Buffer, w messagerouter.ResponseWriter) error {
 }
 
 func init() {
+	Handle("!checkout", Checkout)
 	Handle("!build", Build)
 }
