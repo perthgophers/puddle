@@ -9,7 +9,7 @@ import (
 	"path"
 )
 
-// locates the log and passes it
+// loadFile locates the log and returns it
 func loadFile() (*models.Page, error) {
 	filename := path.Join("logs", "log.txt")
 	body, err := ioutil.ReadFile(filename)
@@ -19,7 +19,7 @@ func loadFile() (*models.Page, error) {
 	return &models.Page{Body: body}, nil
 }
 
-// locats and renders the html file
+// renderTemplate locates and renders the html file
 func renderTemplate(w http.ResponseWriter, p *models.Page) {
 	lp := path.Join("views", "log.html")
 	tmpl, err := template.ParseFiles(lp)
@@ -30,12 +30,19 @@ func renderTemplate(w http.ResponseWriter, p *models.Page) {
 	tmpl.ExecuteTemplate(w, "log.html", p)
 }
 
-// puts everything together
+// ServeTastic executes the loadFile and renderTemplate functions
 func ServeTastic(w http.ResponseWriter, r *http.Request) {
-	p, err := loadFile()
-	if err != nil {
-		log.Println(err)
+	if r.Method != "GET" {
+		http.Error(w, "405: Method Not Allowed", http.StatusMethodNotAllowed)
+
+	} else {
+
+		p, err := loadFile()
+		if err != nil {
+			log.Println(err)
+		}
+
+		renderTemplate(w, p)
 	}
 
-	renderTemplate(w, p)
 }
