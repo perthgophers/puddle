@@ -1,8 +1,10 @@
 package main
 
 import (
+	"./controllers"
 	"github.com/perthgophers/puddle/messagerouter"
 	"github.com/perthgophers/puddle/responses"
+	"net/http"
 	"os"
 	"os/exec"
 )
@@ -33,6 +35,9 @@ func init() {
 }
 
 func main() {
+	go http.HandleFunc("/logs/log.html", controllers.ServeTastic)
+	go http.ListenAndServe(":8080", nil)
+
 	mr := messagerouter.New(SLACKTOKEN, GITTAG, CHANNEL, SPAMCHANNEL)
 
 	responses.Init(mr)
