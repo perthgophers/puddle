@@ -25,3 +25,5 @@ _testmain.go
 vendor
 markovchains.db
 markovchain.db.lock
+;pg
+logs
