@@ -42,7 +42,6 @@ func Weather(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) e
 			switch se := token.(type) {
 			case xml.StartElement:
 				if se.Name.Local == "product" && se.Name.Space == "" {
-					fmt.Println("DECODING")
 					decoder.DecodeElement(&wtemp, &se)
 				}
 			}
@@ -62,7 +61,6 @@ func Weather(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) e
 			}
 			switch se := token.(type) {
 			case xml.StartElement:
-				fmt.Println("Decode")
 				if se.Name.Local == "product" && se.Name.Space == "" {
 					decoder.DecodeElement(&wdata, &se)
 				}
