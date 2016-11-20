@@ -8,7 +8,7 @@ import (
 	"github.com/perthgophers/puddle/messagerouter"
 	"io"
 )
-
+// Weather returns current BOM forecast & temperature, command is !weather
 func Weather(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	var temperature string
 	var forecast string
