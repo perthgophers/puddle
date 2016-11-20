@@ -16,7 +16,8 @@ func loadFile() (*models.Page, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &models.Page{Body: body}, nil
+
+	return &models.Page{Body: template.HTML(body)}, nil
 }
 
 // renderTemplate locates and renders the html file

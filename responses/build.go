@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/perthgophers/puddle/messagerouter"
+	"log"
 	"os/exec"
 	"strings"
 	"sync"
@@ -14,8 +15,7 @@ var lock = new(sync.Mutex)
 
 // Checkout pulls & checks out a branch
 func Checkout(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
+	var out bytes.Buffer
 	words := strings.Split(cr.Text, " ")
 
 	if len(words) < 2 {
@@ -24,18 +24,17 @@ func Checkout(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) 
 	}
 	branch := words[1]
 
-	cmd := exec.Command("git", "pull", "origin", branch)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	cmd := exec.Command("git", "fetch", "origin")
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	cmd.Run()
 
 	cmd = exec.Command("git", "checkout", branch)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	cmd.Run()
 
-	w.Write(stdout.String())
-	if stderr.Len() > 0 {
-		w.Write(stdout.String())
-	}
+	log.Print(out.String())
 
 	return nil
 }
@@ -63,13 +62,14 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	cmd := exec.Command("glide", "up")
+	cmd := exec.Command("glide", "install")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Run()
 
 	if stderr.Len() > 0 {
-		w.WriteError("Error running glide up.\n" + stderr.String())
+		log.Print("Error running glide up.")
+		log.Print(stderr.String())
 	}
 
 	stdout.Reset()
