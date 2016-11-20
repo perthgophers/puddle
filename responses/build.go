@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/perthgophers/puddle/messagerouter"
+	"log"
 	"os/exec"
 	"strings"
 	"sync"
@@ -24,7 +25,7 @@ func Checkout(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) 
 	}
 	branch := words[1]
 
-	cmd := exec.Command("git", "pull", "origin", branch)
+	cmd := exec.Command("git", "fetch", "origin")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
@@ -69,7 +70,8 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	cmd.Run()
 
 	if stderr.Len() > 0 {
-		w.WriteError("Error running glide up.\n" + stderr.String())
+		log.Print("Error running glide up.")
+		log.Print(stderr.String())
 	}
 
 	stdout.Reset()
