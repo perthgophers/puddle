@@ -70,7 +70,7 @@ Loop:
 
 			case *slack.ConnectedEvent:
 				log.Println("######### Connected to Slack #########")
-				mr.RTM.SendMessage(mr.RTM.NewOutgoingMessage(fmt.Sprintf("... and I'm back! Git tag: %s", mr.gittag), mr.channel))
+				mr.RTM.SendMessage(mr.RTM.NewOutgoingMessage(fmt.Sprintf("... and I'm back! Git tag: %s", mr.gittag), mr.spamchannel))
 
 			case *slack.MessageEvent:
 				j, _ := json.Marshal(ev.Msg)
