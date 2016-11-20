@@ -62,7 +62,19 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	cmd := exec.Command("go", "install")
+	cmd := exec.Command("glide", "up")
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	cmd.Run()
+
+	if stderr.Len() > 0 {
+		w.WriteError("Error running glide up.\n" + stderr.String())
+	}
+
+	stdout.Reset()
+	stderr.Reset()
+
+	cmd = exec.Command("go", "install")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Run()
@@ -70,6 +82,8 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	w.Write(stdout.String())
 	if stderr.Len() > 0 {
 		w.WriteError("Error building:" + stderr.String())
+	} else {
+		w.Write(":champagne: Go install completed successfully. :champagne: ")
 	}
 
 	Restart(cr, w)
