@@ -27,10 +27,12 @@ func Checkout(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) 
 	cmd := exec.Command("git", "fetch", "origin")
 	cmd.Stdout = &out
 	cmd.Stderr = &out
+	cmd.Run()
 
 	cmd = exec.Command("git", "checkout", branch)
 	cmd.Stdout = &out
 	cmd.Stderr = &out
+	cmd.Run()
 
 	log.Print(out.String())
 
