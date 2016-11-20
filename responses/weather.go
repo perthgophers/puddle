@@ -9,6 +9,8 @@ import (
 	"io"
 )
 
+// Weather prints out the current temperature & forecast.
+// Usage: !weather
 func Weather(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	var temperature string
 	var forecast string
