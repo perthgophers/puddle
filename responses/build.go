@@ -64,7 +64,7 @@ func Build(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) err
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	cmd := exec.Command("glide", "up")
+	cmd := exec.Command("glide", "install")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Run()
