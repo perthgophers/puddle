@@ -63,7 +63,6 @@ Loop:
 	for {
 		select {
 		case msg := <-mr.RTM.IncomingEvents:
-			log.Print("Event Received: ")
 			switch ev := msg.Data.(type) {
 			case *slack.HelloEvent:
 				// Ignore hello
