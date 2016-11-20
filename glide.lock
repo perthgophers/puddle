@@ -1,10 +1,14 @@
-hash: 5e996e28c0037b3483b5e2f75afc0ef094b9e1d1e58c0360bd2a06895cab1494
-updated: 2016-11-17T13:00:58.206344454+08:00
+hash: e9db2a6b975a4bd8880fe92082a6ded0c855086e874c784d781705ce6ac272a3
+updated: 2016-11-19T15:33:47.814858753+08:00
 imports:
 - name: github.com/boltdb/bolt
   version: 583e8937c61f1af6513608ccc75c97b6abdf4ff9
+- name: github.com/dutchcoders/goftp
+  version: 9d6dd61743746e9b3653393e23507971f1e92e7d
 - name: github.com/nlopes/slack
   version: e595e9d8590a04ff76407e4e7d1791d25b095c66
+- name: github.com/smallfish/ftp
+  version: 6d094f003ac5158ebda8899b5c4488cd76c29d69
 - name: golang.org/x/net
   version: 5bc3a08dc8042ac11f2752c257a2367c02ba32e8
   subpackages:
