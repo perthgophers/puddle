@@ -37,7 +37,7 @@ func (w *SlackResponseWriter) Rtm(rtm *slack.RTM) {
 
 // WriteChannel sends message to particular channel
 func (w *SlackResponseWriter) WriteChannel(channel string, text string) error {
-	w.rtm.SendMessage(w.rtm.NewOutgoingMessage(text, w.msg.Channel))
+	w.rtm.SendMessage(w.rtm.NewOutgoingMessage(text, channel))
 	return nil
 }
 
