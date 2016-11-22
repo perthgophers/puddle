@@ -1,10 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"github.com/perthgophers/puddle/controllers"
-	"github.com/perthgophers/puddle/messagerouter"
-	"github.com/perthgophers/puddle/responses"
 	"html"
 	"io"
 	"log"
@@ -12,6 +8,10 @@ import (
 	"os"
 	"os/exec"
 	"time"
+
+	"github.com/perthgophers/puddle/controllers"
+	"github.com/perthgophers/puddle/messagerouter"
+	"github.com/perthgophers/puddle/responses"
 )
 
 // SLACKTOKEN is the slack API token
@@ -20,7 +20,10 @@ var SLACKTOKEN string
 // GITTAG Current Git Tag
 var GITTAG string
 
+// CHANNEL is the channel ID for puddle to post into
 const CHANNEL = "C32K3QDFE"
+
+// SPAMCHANNEL the channel ID for puddle to post spam into
 const SPAMCHANNEL = "C33C4MJSH"
 
 // PuddleLogger is an io.Writer to add HTML to log output
@@ -30,10 +33,10 @@ type PuddleLogger struct {
 
 // NewPuddleLogger initialises a PuddleLogger and rotates the log file
 func NewPuddleLogger() *PuddleLogger {
-	pf := new(PuddleLogger)
-	pf.Rotate()
+	pl := new(PuddleLogger)
+	pl.Rotate()
 
-	return pf
+	return pl
 }
 
 // Write writes len(b) bytes to the log File.
@@ -59,24 +62,27 @@ func (pl *PuddleLogger) Write(b []byte) (n int, err error) {
 }
 
 // Close closes the log file
-func (pf *PuddleLogger) Close() {
-	if pf.file != nil {
-		pf.file.Close()
+func (pl *PuddleLogger) Close() {
+	if pl.file != nil {
+		err := pl.file.Close()
+		if err != nil {
+			log.Println(err)
+		}
 	}
-	pf.file = nil
+	pl.file = nil
 }
 
 // Rotate closes the opened file, and renames it to log_<datestamp>.txt for archival
 // It then creates a new log.txt and opens it
-func (pf *PuddleLogger) Rotate() {
-	pf.Close()
+func (pl *PuddleLogger) Rotate() {
+	pl.Close()
 	t := time.Now()
 	dtSuffix := t.Format("2006_January__2_15_03_05")
 	err := os.Rename("./logs/log.txt", "./logs/log_"+dtSuffix+".txt")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
-	pf.file, err = os.OpenFile("./logs/log.txt", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	pl.file, err = os.OpenFile("./logs/log.txt", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 
 	if err != nil {
 		log.Fatalln("Unable to open log")
@@ -103,10 +109,10 @@ func main() {
 	logger := NewPuddleLogger()
 
 	log.SetOutput(logger)
+	log.SetFlags(log.Lshortfile)
 	defer logger.Close()
 
-	http.HandleFunc("/log", controllers.ServeTastic)
-	go http.ListenAndServe(":8080", nil)
+	go http.HandleFunc("/log", controllers.ServeTastic)
 
 	mr := messagerouter.New(SLACKTOKEN, GITTAG, CHANNEL, SPAMCHANNEL)
 
