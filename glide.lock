@@ -1,5 +1,5 @@
-hash: e9db2a6b975a4bd8880fe92082a6ded0c855086e874c784d781705ce6ac272a3
-updated: 2016-11-19T15:33:47.814858753+08:00
+hash: ac58432e9f17383c8f3275eda9ce5bf7614a66e86268ed5405d9a6170afe7774
+updated: 2017-01-07T16:07:42.918586852+08:00
 imports:
 - name: github.com/boltdb/bolt
   version: 583e8937c61f1af6513608ccc75c97b6abdf4ff9
@@ -7,14 +7,14 @@ imports:
   version: 9d6dd61743746e9b3653393e23507971f1e92e7d
 - name: github.com/nlopes/slack
   version: e595e9d8590a04ff76407e4e7d1791d25b095c66
-- name: github.com/smallfish/ftp
-  version: 6d094f003ac5158ebda8899b5c4488cd76c29d69
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: golang.org/x/net
-  version: 5bc3a08dc8042ac11f2752c257a2367c02ba32e8
+  version: 279e8088146c98d22b601754aa950b3d449af152
   subpackages:
   - websocket
 - name: golang.org/x/sys
-  version: b699b7032584f0953262cb2788a0ca19bb494703
+  version: d75a52659825e75fff6158388dddc6a5b04f9ba5
   subpackages:
   - unix
 testImports: []

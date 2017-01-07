@@ -4,3 +4,5 @@ import:
 - package: github.com/boltdb/bolt
   version: ~1.3.0
 - package: github.com/dutchcoders/goftp
+- package: github.com/pkg/errors
+  version: ~0.8.0

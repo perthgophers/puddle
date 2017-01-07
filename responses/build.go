@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/perthgophers/puddle/messagerouter"
 	"log"
 	"os/exec"
 	"strings"
 	"sync"
+
+	"github.com/perthgophers/puddle/messagerouter"
 )
 
 var lock = new(sync.Mutex)
