@@ -12,6 +12,8 @@ import (
 	"github.com/perthgophers/puddle/controllers"
 	"github.com/perthgophers/puddle/messagerouter"
 	"github.com/perthgophers/puddle/responses"
+
+	"github.com/perthgophers/puddle/mud"
 )
 
 // SLACKTOKEN is the slack API token
@@ -117,5 +119,7 @@ func main() {
 	mr := messagerouter.New(SLACKTOKEN, GITTAG, CHANNEL, SPAMCHANNEL)
 
 	responses.Init(mr)
+	mud.InitDungeon()
+
 	mr.Run()
 }
