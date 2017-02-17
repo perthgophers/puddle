@@ -2,7 +2,10 @@ package responses
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/perthgophers/puddle/messagerouter"
 )
@@ -46,8 +49,18 @@ type Definition struct {
 	} `json:"results"`
 }
 
+// Define fetches the dictionary definition of a word
 func Define(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	req, err := http.NewRequest("GET", "https://od-api.oxforddictionaries.com:443/api/v1/entries/en/cathartic", nil)
+	messageArray := strings.Split(cr.Text, " ")
+	if len(messageArray) != 2 {
+		w.Write("Only one word please")
+		return nil
+	}
+	query, err := url.Parse(fmt.Sprintf("https://od-api.oxforddictionaries.com:443/api/v1/entries/en/%s", messageArray[1]))
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest("GET", query.String(), nil)
 	if err != nil {
 		return err
 	}
@@ -63,7 +76,10 @@ func Define(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) er
 
 	definition := &Definition{}
 	json.NewDecoder(resp.Body).Decode(definition)
-
+	if len(definition.Results) == 0 {
+		w.Write("No definitions found")
+		return nil
+	}
 	w.Write(definition.Results[0].LexicalEntries[0].Entries[0].Senses[0].Definitions[0])
 	return nil
 }
