@@ -80,11 +80,11 @@ func (pl *PuddleLogger) Rotate() {
 	pl.Close()
 	t := time.Now()
 	dtSuffix := t.Format("2006_January__2_15_03_05")
-	err := os.Rename("./logs/log.txt", "./logs/log_"+dtSuffix+".txt")
+	err := os.Rename("/tmp/puddlelog.txt", "/tmp/puddlelog_"+dtSuffix+".txt")
 	if err != nil {
 		log.Println(err)
 	}
-	pl.file, err = os.OpenFile("./logs/log.txt", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	pl.file, err = os.OpenFile("/tmp/puddlelog.txt", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 
 	if err != nil {
 		log.Fatalln("Unable to open log")
