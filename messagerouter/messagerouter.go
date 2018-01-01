@@ -4,9 +4,10 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/nlopes/slack"
 	"log"
 	"os"
+
+	"github.com/nlopes/slack"
 )
 
 // MessageRouter does stuff with messages.
@@ -47,19 +48,17 @@ func New(token, gittag, channel string, spamchannel string) *MessageRouter {
 }
 
 func (mr *MessageRouter) Run() {
-
 	if mr.IsDev {
 		mr.runCLI()
-	} else {
-		mr.runSlack()
+		return
 	}
-
+	mr.runSlack()
 }
 
 // runCLI Starts the slack API & connects to #puddle
 func (mr *MessageRouter) runSlack() {
 	go mr.RTM.ManageConnection()
-Loop:
+	// Loop:
 	for {
 		select {
 		case msg := <-mr.RTM.IncomingEvents:
@@ -69,7 +68,7 @@ Loop:
 
 			case *slack.ConnectedEvent:
 				log.Println("######### Connected to Slack #########")
-				mr.RTM.SendMessage(mr.RTM.NewOutgoingMessage(fmt.Sprintf("... and I'm back! Git tag: %s", mr.gittag), mr.spamchannel))
+				// mr.RTM.SendMessage(mr.RTM.NewOutgoingMessage(fmt.Sprintf("... and I'm back! Git tag: %s", mr.gittag), mr.spamchannel))
 
 			case *slack.MessageEvent:
 				j, _ := json.Marshal(ev.Msg)
@@ -77,17 +76,28 @@ Loop:
 				mr.ProcessMessage(&ev.Msg)
 
 			case *slack.PresenceChangeEvent:
-				log.Printf("Presence Change: %v\n", ev)
+				// log.Printf("Presence Change: %v\n", ev)
 
 			case *slack.LatencyReport:
-				log.Printf("Current latency: %v\n", ev.Value)
-
+				// log.Printf("Current latency: %v\n", ev.Value)
+			case *slack.OutgoingErrorEvent:
+				fmt.Println("Received OutgoingErrorEvent")
+				fmt.Println(ev)
+			case *slack.IncomingEventError:
+				fmt.Println("Received IncomingEventError")
+				fmt.Println(ev)
+			case *slack.ConnectionErrorEvent:
+				fmt.Println("Received ConnectionErrorEvent")
+				fmt.Println(ev)
+				os.Exit(1)
 			case *slack.RTMError:
-				log.Printf("Error: %s\n", ev.Error())
+				fmt.Printf("%d:%s %s", ev.Code, ev.Error(), ev.Msg)
+				// log.Printf("Error: %s\n", ev.Error())
 
 			case *slack.InvalidAuthEvent:
-				log.Printf("Invalid credentials")
-				break Loop
+				fmt.Println("Received InvalidAuthEvent")
+				// log.Printf("Invalid credentials")
+				os.Exit(1)
 
 			// Ignore other events..
 			default:
