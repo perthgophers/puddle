@@ -6,13 +6,53 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
+	"github.com/micro/cli"
 	"github.com/perthgophers/puddle/messagerouter"
 	"github.com/pkg/errors"
 )
 
+func PortfolioWrapper(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+	cmd := cli.NewApp()
+	cmd.Name = "Portfolio Management"
+	cmd.Usage = "Add, track and manage your crypto portfolio!"
+	cmd.Action = func(c *cli.Context) {
+		fmt.Println(c.Args())
+	}
+	cmd.Commands = []cli.Command{
+		{
+			Name:   "register, r",
+			Usage:  "Register yourself for portfolio tracking",
+			Action: PortfolioRegister,
+		},
+		{
+			Name:  "get, g",
+			Usage: "Get your current portoflio",
+			Action: func(c *cli.Context) {
+				err := Portfolio(cr, w)
+				if err != nil {
+					w.WriteError(err.Error())
+					return
+				}
+			},
+		},
+	}
+	msg := strings.Fields(cr.Text)
+	err := cmd.Run(msg)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PortfolioRegister(c *cli.Context) {
+	fmt.Println("Called")
+}
+
 // Portfolio will return a string containing the current rate in USD
 func Portfolio(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+
 	if cr.Username != "nii236" {
 		return errors.New("invalid username " + cr.Username)
 	}
@@ -64,7 +104,6 @@ func Portfolio(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter)
 		return errors.Wrap(err, "could not convert to AUD")
 	}
 	w.Write(fmt.Sprintf("Your crypto net worth is: %.2f USD (%.2f AUD)", total, aud))
-
 	return nil
 }
 
@@ -105,5 +144,5 @@ func usdToAud(usd float64) (float64, error) {
 }
 
 func init() {
-	Handle("!portfolio", Portfolio)
+	Handle("!portfolio", PortfolioWrapper)
 }
