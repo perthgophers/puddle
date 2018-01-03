@@ -31,6 +31,16 @@ type Ticker struct {
 	LastUpdated      string `json:"last_updated"`
 }
 
+// Symbol gets the ticker from a slice of tickers
+func (ts Tickers) Symbol(sym string) *Ticker {
+	for _, v := range ts {
+		if v.Symbol == sym {
+			return v
+		}
+	}
+	return nil
+}
+
 // Get gets the ticker from a slice of tickers
 func (ts Tickers) Get(name string) *Ticker {
 	for _, v := range ts {

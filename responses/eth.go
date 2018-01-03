@@ -2,10 +2,11 @@ package responses
 
 import (
 	"encoding/json"
-	"github.com/perthgophers/puddle/messagerouter"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/perthgophers/puddle/messagerouter"
 )
 
 // EthTicker will return a string containing the current rate in USD

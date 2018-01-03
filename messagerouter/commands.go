@@ -3,10 +3,11 @@ package messagerouter
 import (
 	"errors"
 	"fmt"
-	"github.com/nlopes/slack"
 	"log"
 	"strings"
 	"sync"
+
+	"github.com/nlopes/slack"
 )
 
 var lock = new(sync.Mutex)
@@ -23,7 +24,7 @@ type CommandRequest struct {
 type MessageHandler func(*CommandRequest, ResponseWriter) error
 
 // usernameCache stores usernames to protect against slack API exhaustion
-var usernameCache = map[string]string{"0": "cliuser"}
+var usernameCache = map[string]string{"0": "nii236"}
 
 // GetUsername retrieves human readable username information from SLACK API using Slack username ID
 func (mr *MessageRouter) GetUsername(msg *slack.Msg) (string, error) {
