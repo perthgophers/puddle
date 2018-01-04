@@ -28,7 +28,7 @@ type PuddleWriter struct {
 
 // WriteError implements io.Writer for errors
 func (pw *PuddleWriter) Write(p []byte) (int, error) {
-	err := pw.w.Write(string(p))
+	err := pw.w.Write("\n```\n" + string(p) + "\n```\n")
 	if err != nil {
 		fmt.Println(err)
 		return 0, err
@@ -72,12 +72,12 @@ func (p *Portfolio) PortfolioGet(c *cli.Context, r *messagerouter.CommandRequest
 
 	resp, err := http.Get("https://api.coinmarketcap.com/v1/ticker/")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "could not get ticker")
 	}
 	result := &Tickers{}
 	err = json.NewDecoder(resp.Body).Decode(result)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "could not decode json response from ticker API")
 	}
 
 	ETHticker := result.Symbol("ETH")
@@ -113,8 +113,7 @@ func (p *Portfolio) PortfolioGet(c *cli.Context, r *messagerouter.CommandRequest
 
 // PortfolioRegister adds the current user to the DB (not implemented)
 func (p *Portfolio) PortfolioRegister(c *cli.Context, r *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	fmt.Println("Register Called")
-	return nil
+	return w.Write("Register called (not implemented)")
 }
 
 func helpPrinter(out io.Writer, templ string, data interface{}) {
@@ -131,13 +130,25 @@ func helpPrinter(out io.Writer, templ string, data interface{}) {
 		return
 	}
 
-	bw.Flush()
+	err = bw.Flush()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 // Run will return a string containing the current rate in USD
 func (p *Portfolio) Run(r *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
 	cmd := &cli.App{
-		Name:      "Portfolio Management",
+		Name:    "Portfolio Management",
+		Version: "0.0.1",
+		Authors: []*cli.Author{
+			{
+				Name:  "John Nguyen",
+				Email: "jtnguyen236@gmail.com",
+			},
+		},
+		Usage:     "Disruption through innovation, blockchain, AI and machine learning",
 		UsageText: "Add, track and manage your crypto portfolio!",
 		Commands: []*cli.Command{
 			{
@@ -145,8 +156,7 @@ func (p *Portfolio) Run(r *messagerouter.CommandRequest, w messagerouter.Respons
 				Aliases: []string{"r"},
 				Usage:   "Register yourself for portfolio tracking",
 				Action: func(c *cli.Context) error {
-					p.PortfolioRegister(c, r, w)
-					return nil
+					return p.PortfolioRegister(c, r, w)
 				},
 			},
 			{
@@ -154,8 +164,7 @@ func (p *Portfolio) Run(r *messagerouter.CommandRequest, w messagerouter.Respons
 				Aliases: []string{"g"},
 				Usage:   "Get your current portoflio",
 				Action: func(c *cli.Context) error {
-					p.PortfolioGet(c, r, w)
-					return nil
+					return p.PortfolioGet(c, r, w)
 				},
 			},
 		},
@@ -187,7 +196,6 @@ type forexTicker struct {
 }
 
 func usdToAud(usd float64) (float64, error) {
-
 	resp, err := http.Get("https://api.fixer.io/latest?symbols=USD,AUD")
 	if err != nil {
 		return 0, err
