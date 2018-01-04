@@ -1,61 +1,64 @@
 package responses
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 
-	"github.com/micro/cli"
 	"github.com/perthgophers/puddle/messagerouter"
 	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
 )
 
-func PortfolioWrapper(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-	cmd := cli.NewApp()
-	cmd.Name = "Portfolio Management"
-	cmd.Usage = "Add, track and manage your crypto portfolio!"
-	cmd.Action = func(c *cli.Context) {
-		fmt.Println(c.Args())
-	}
-	cmd.Commands = []cli.Command{
-		{
-			Name:   "register, r",
-			Usage:  "Register yourself for portfolio tracking",
-			Action: PortfolioRegister,
-		},
-		{
-			Name:  "get, g",
-			Usage: "Get your current portoflio",
-			Action: func(c *cli.Context) {
-				err := Portfolio(cr, w)
-				if err != nil {
-					w.WriteError(err.Error())
-					return
-				}
-			},
-		},
-	}
-	msg := strings.Fields(cr.Text)
-	err := cmd.Run(msg)
+// Portfolio is the command handling portfolio commands
+type Portfolio struct{}
+
+// PuddleWriter implements io.Writer
+type PuddleWriter struct {
+	w messagerouter.ResponseWriter
+	r *messagerouter.CommandRequest
+}
+
+// WriteError implements io.Writer for errors
+func (pw *PuddleWriter) Write(p []byte) (int, error) {
+	err := pw.w.Write(string(p))
 	if err != nil {
-		return err
+		fmt.Println(err)
+		return 0, err
 	}
-	return nil
+
+	return len(p), nil
 }
 
-func PortfolioRegister(c *cli.Context) {
-	fmt.Println("Called")
+// PuddleErrWriter implements io.Writer
+type PuddleErrWriter struct {
+	w messagerouter.ResponseWriter
+	r *messagerouter.CommandRequest
 }
 
-// Portfolio will return a string containing the current rate in USD
-func Portfolio(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
-
-	if cr.Username != "nii236" {
-		return errors.New("invalid username " + cr.Username)
+// WriteError implements io.Writer for errors
+func (pw *PuddleErrWriter) Write(p []byte) (int, error) {
+	err := pw.w.WriteError(string(p))
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
 	}
+	return len(p), nil
+}
+
+// PortfolioGet gets the current user's portfolio
+func (p *Portfolio) PortfolioGet(c *cli.Context, r *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+	if r.Username != "nii236" {
+		return errors.New("invalid username " + r.Username)
+	}
+
 	ethAmt := os.Getenv("ETH")
 	btcAmt := os.Getenv("BTC")
 	bchAmt := os.Getenv("BCH")
@@ -105,6 +108,62 @@ func Portfolio(cr *messagerouter.CommandRequest, w messagerouter.ResponseWriter)
 	}
 	w.Write(fmt.Sprintf("Your crypto net worth is: %.2f USD (%.2f AUD)", total, aud))
 	return nil
+
+}
+
+// PortfolioRegister adds the current user to the DB (not implemented)
+func (p *Portfolio) PortfolioRegister(c *cli.Context, r *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+	fmt.Println("Register Called")
+	return nil
+}
+
+func helpPrinter(out io.Writer, templ string, data interface{}) {
+	funcMap := template.FuncMap{
+		"join": strings.Join,
+	}
+	bw := bufio.NewWriter(out)
+	w := tabwriter.NewWriter(bw, 1, 8, 2, ' ', 0)
+	t := template.Must(template.New("help").Funcs(funcMap).Parse(templ))
+
+	err := t.Execute(w, data)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	bw.Flush()
+}
+
+// Run will return a string containing the current rate in USD
+func (p *Portfolio) Run(r *messagerouter.CommandRequest, w messagerouter.ResponseWriter) error {
+	cmd := &cli.App{
+		Name:      "Portfolio Management",
+		UsageText: "Add, track and manage your crypto portfolio!",
+		Commands: []*cli.Command{
+			{
+				Name:    "register",
+				Aliases: []string{"r"},
+				Usage:   "Register yourself for portfolio tracking",
+				Action: func(c *cli.Context) error {
+					p.PortfolioRegister(c, r, w)
+					return nil
+				},
+			},
+			{
+				Name:    "get",
+				Aliases: []string{"g"},
+				Usage:   "Get your current portoflio",
+				Action: func(c *cli.Context) error {
+					p.PortfolioGet(c, r, w)
+					return nil
+				},
+			},
+		},
+		Writer:    &PuddleWriter{w, r},
+		ErrWriter: &PuddleErrWriter{w, r},
+	}
+
+	return cmd.Run(strings.Fields(r.Text))
 }
 
 func calcValue(ownAmt, tickerAmt string) (float64, error) {
@@ -144,5 +203,7 @@ func usdToAud(usd float64) (float64, error) {
 }
 
 func init() {
-	Handle("!portfolio", PortfolioWrapper)
+	cli.HelpPrinter = helpPrinter
+	cmd := &Portfolio{}
+	Handle("!portfolio", cmd.Run)
 }

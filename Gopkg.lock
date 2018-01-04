@@ -15,6 +15,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/micro/cli"
+  packages = ["."]
+  revision = "3d2263bb092286dde294a31049c92665f8373820"
+
+[[projects]]
+  branch = "master"
   name = "github.com/nlopes/slack"
   packages = ["."]
   revision = "cd00933611d778bfac4ef1d32b7d3176c6c870d0"
@@ -24,12 +30,6 @@
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
-
-[[projects]]
-  name = "github.com/urfave/cli"
-  packages = ["."]
-  revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
-  version = "v1.20.0"
 
 [[projects]]
   branch = "master"
@@ -43,9 +43,15 @@
   packages = ["unix"]
   revision = "83801418e1b59fb1880e363299581ee543af32ca"
 
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/urfave/cli.v2"
+  packages = ["."]
+  revision = "b2bf3c5abeb90da407891aecd1df2c5a1f6170c1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "19837f15ede438cf35b561499af1cb01177274567ea3cb6855b9efca9b5e05a3"
+  inputs-digest = "cee202eca2d12f4260ea8de02335739d1afa00472b6a93e21e5f027530202f7b"
   solver-name = "gps-cdcl"
   solver-version = 1
