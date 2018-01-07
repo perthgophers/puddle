@@ -113,11 +113,11 @@ func (p *Portfolio) PortfolioGet(c *cli.Context, r *messagerouter.CommandRequest
 	if err != nil {
 		return errors.Wrap(err, "could not parse ethAmt to float")
 	}
-	btcAmtFloat, err := strconv.ParseFloat(ethAmt, 64)
+	btcAmtFloat, err := strconv.ParseFloat(btcAmt, 64)
 	if err != nil {
 		return errors.Wrap(err, "could not parse btcAmt to float")
 	}
-	bchAmtFloat, err := strconv.ParseFloat(ethAmt, 64)
+	bchAmtFloat, err := strconv.ParseFloat(bchAmt, 64)
 	if err != nil {
 		return errors.Wrap(err, "could not parse bchAmt to float")
 	}
