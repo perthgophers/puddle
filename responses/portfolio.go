@@ -64,7 +64,7 @@ func (p *Portfolio) PortfolioGet(c *cli.Context, r *messagerouter.CommandRequest
 	bchAmt := os.Getenv("BCH")
 
 	if ethAmt == "" || btcAmt == "" || bchAmt == "" {
-		return errors.New("portfolio not provided in environment variables")
+		return errors.New("ETH, BTC or BCH not provided in environment variables")
 	}
 	type HTTPResponse struct {
 		Last string `json:"last"`
@@ -80,33 +80,71 @@ func (p *Portfolio) PortfolioGet(c *cli.Context, r *messagerouter.CommandRequest
 		return errors.Wrap(err, "could not decode json response from ticker API")
 	}
 
-	ETHticker := result.Symbol("ETH")
-	BTCticker := result.Symbol("BTC")
-	BCHticker := result.Symbol("BCH")
+	ethticker := result.Symbol("ETH")
+	btcticker := result.Symbol("BTC")
+	bchticker := result.Symbol("BCH")
 
-	if ETHticker == nil || BTCticker == nil || BCHticker == nil {
+	if ethticker == nil || btcticker == nil || bchticker == nil {
 		return errors.New("could not find tickers from API response")
 	}
 
-	ethTotal, err := calcValue(ethAmt, ETHticker.PriceUsd)
+	ethTotal, err := calcValue(ethAmt, ethticker.PriceUsd)
 	if err != nil {
 		return errors.Wrap(err, "could not calculate total value")
 	}
-	btcTotal, err := calcValue(btcAmt, BTCticker.PriceUsd)
+
+	btcTotal, err := calcValue(btcAmt, btcticker.PriceUsd)
 	if err != nil {
 		return errors.Wrap(err, "could not calculate total value")
 	}
-	bchTotal, err := calcValue(bchAmt, BCHticker.PriceUsd)
+
+	bchTotal, err := calcValue(bchAmt, bchticker.PriceUsd)
 	if err != nil {
 		return errors.Wrap(err, "could not calculate total value")
 	}
 
 	total := ethTotal + btcTotal + bchTotal
-	aud, err := usdToAud(total)
+	audTotal, err := usdToAud(total)
 	if err != nil {
 		return errors.Wrap(err, "could not convert to AUD")
 	}
-	w.Write(fmt.Sprintf("Your crypto net worth is: %.2f USD (%.2f AUD)", total, aud))
+
+	ethAmtFloat, err := strconv.ParseFloat(ethAmt, 64)
+	if err != nil {
+		return errors.Wrap(err, "could not parse ethAmt to float")
+	}
+	btcAmtFloat, err := strconv.ParseFloat(ethAmt, 64)
+	if err != nil {
+		return errors.Wrap(err, "could not parse btcAmt to float")
+	}
+	bchAmtFloat, err := strconv.ParseFloat(ethAmt, 64)
+	if err != nil {
+		return errors.Wrap(err, "could not parse bchAmt to float")
+	}
+
+	ethPriceUSDFloat, err := strconv.ParseFloat(ethticker.PriceUsd, 64)
+	if err != nil {
+		return errors.Wrap(err, "could not parse ethticker.PriceUSD to float")
+	}
+	btcPriceUSDFloat, err := strconv.ParseFloat(btcticker.PriceUsd, 64)
+	if err != nil {
+		return errors.Wrap(err, "could not parse btcticker.PriceUSD to float")
+	}
+	bchPriceUSDFloat, err := strconv.ParseFloat(bchticker.PriceUsd, 64)
+	if err != nil {
+		return errors.Wrap(err, "could not parse bchticker.PriceUSD to float")
+	}
+
+	w.Write(fmt.Sprintf(`Your crypto net worth is: %.2f USD (%.2f AUD)
+	
+%.2f ETH @ %.2f USD = %.2f USD
+%.2f BTC @ %.2f USD = %.2f USD
+%.2f BCH @ %.2f USD = %.2f USD`,
+		total, audTotal,
+		ethAmtFloat, ethPriceUSDFloat, ethTotal,
+		btcAmtFloat, btcPriceUSDFloat, btcTotal,
+		bchAmtFloat, bchPriceUSDFloat, bchTotal,
+	))
 	return nil
 
 }
